@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-50:  #E8F0FB;
+  --color-brand-100: #C3D4F5;
+  --color-brand-200: #92AEED;
+  --color-brand-400: #4A7ED4;
+  --color-brand-600: #1D4E9C;
+  --color-brand-800: #0F2D63;
+  --color-brand-900: #071840;
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --animate-slide-in: slideIn 0.2s ease;
+  --animate-slide-up: slideUp 0.25s ease;
+  @keyframes slideIn  { from { transform: translateX(20px);  opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes slideUp  { from { transform: translateY(100%);  opacity: 0; } to { transform: none; opacity: 1; } }
+  @keyframes fadeIn   { from { opacity: 0; } to { opacity: 1; } }
+}
+
+@layer base {
+  * { -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: var(--font-sans);
+    @apply text-sm text-gray-900 bg-gray-50 antialiased;
+    /* Prevent bounce scroll showing white on mobile */
+    overscroll-behavior: none;
+  }
+
+  input, select, textarea {
+    @apply w-full px-3 py-2.5 text-sm bg-white border border-gray-200 rounded-xl
+           text-gray-900 font-sans
+           focus:outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-400/20
+           transition-colors;
+    /* Minimum touch target height */
+    min-height: 44px;
+    font-size: 16px; /* prevents iOS zoom on focus */
+  }
+
+  input[readonly] { @apply bg-gray-50 text-gray-500 cursor-default; }
+
+  button {
+    /* Minimum touch target */
+    min-height: 44px;
+    touch-action: manipulation;
+  }
+}
+
+@layer utilities {
+  .spin { animation: spin 0.7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .animate-slide-in { animation: var(--animate-slide-in); }
+  .animate-slide-up { animation: var(--animate-slide-up); }
+  .animate-fade-in  { animation: fadeIn 0.2s ease; }
+
+  /* Safe area padding for notched phones */
+  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
+  .pt-safe { padding-top:    env(safe-area-inset-top, 0px); }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .scrollbar-thin::-webkit-scrollbar { width: 3px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { @apply bg-gray-200 rounded-full; }
+}
