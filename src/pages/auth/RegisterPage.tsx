@@ -36,10 +36,14 @@ export const RegisterPage = () => {
             <i className="ti ti-stethoscope text-white text-2xl" aria-hidden="true" />
           </div>
           <h1 className="text-xl font-semibold text-gray-900">MedFit</h1>
-          <p className="text-sm text-gray-400 mt-0.5">Create your doctor account</p>
+          <p className="text-sm text-gray-400 mt-0.5">Set up the first admin account</p>
         </div>
 
         <div className="bg-white border border-gray-100 rounded-2xl p-6 shadow-sm">
+          <div className="flex items-start gap-2 p-3 bg-blue-50 border border-blue-100 rounded-lg mb-4 text-xs text-blue-700">
+            <i className="ti ti-info-circle flex-shrink-0 mt-0.5" aria-hidden="true" />
+            <span>Sign-up is only for the first (admin) account. After that, ask an administrator to create your account.</span>
+          </div>
           {error && (
             <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-lg mb-4 text-sm text-red-700">
               <i className="ti ti-alert-circle flex-shrink-0" aria-hidden="true" />

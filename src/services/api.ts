@@ -96,6 +96,7 @@ export const exportApi = {
 export const adminApi = {
   stats:        ()                          => get("/admin/stats"),
   listUsers:    (page = 1)                  => get(`/admin/users?page=${page}`),
+  createUser:   (data: unknown)             => post("/admin/users", data),
   getUser:      (id: string)                => get(`/admin/users/${id}`),
   changeRole:   (id: string, role: string)  => request("PATCH", `/admin/users/${id}/role`,   { role }),
   changeStatus: (id: string, isActive: boolean) => request("PATCH", `/admin/users/${id}/status`, { isActive }),

@@ -4,7 +4,9 @@ import { useAppSelector } from "../../hooks/useRedux";
 import { adminApi } from "../../services/api";
 import { Topbar } from "../../components/layout/Topbar";
 import { Button } from "../../components/ui/Button";
-import { Badge } from "../../components/ui/Badge";
+import { Pagination } from "../../components/ui/Pagination";
+import { UserCreateModal } from "../../components/admin/UserCreateModal";
+import type { PaginationMeta } from "../../types";
 
 interface User {
   _id:          string;
@@ -36,24 +38,27 @@ export const UserManagementPage = () => {
   const [loading, setLoading] = useState(true);
   const [actionId, setActionId] = useState<string | null>(null);
   const [error,   setError]   = useState("");
+  const [page,    setPage]    = useState(1);
+  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+  const [showCreate, setShowCreate] = useState(false);
 
   // Redirect non-admins
   useEffect(() => {
     if (currentUser && currentUser.role !== "admin") navigate("/", { replace: true });
   }, [currentUser, navigate]);
 
-  const load = async () => {
+  const load = async (p = page) => {
     setLoading(true);
     const [usersRes, statsRes] = await Promise.all([
-      adminApi.listUsers() as Promise<{ success: boolean; data?: User[] }>,
-      adminApi.stats()     as Promise<{ success: boolean; data?: Stats }>,
+      adminApi.listUsers(p) as Promise<{ success: boolean; data?: User[]; pagination?: PaginationMeta }>,
+      adminApi.stats()      as Promise<{ success: boolean; data?: Stats }>,
     ]);
-    if (usersRes.success) setUsers(usersRes.data ?? []);
+    if (usersRes.success) { setUsers(usersRes.data ?? []); setPagination(usersRes.pagination ?? null); }
     if (statsRes.success) setStats(statsRes.data ?? null);
     setLoading(false);
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { load(page); }, [page]);
 
   const handleRoleToggle = async (user: User) => {
     const newRole = user.role === "admin" ? "doctor" : "admin";
@@ -92,12 +97,19 @@ export const UserManagementPage = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col min-h-full">
       <Topbar
         icon="ti-shield-lock"
         title="User management"
-        subtitle="Admin-only · Manage doctor accounts and roles"
-        actions={<Button icon="ti-refresh" onClick={load}>Refresh</Button>}
+        subtitle={pagination ? `Admin-only · ${pagination.total} users` : "Admin-only · Manage doctor accounts and roles"}
+        actions={
+          <div className="flex items-center gap-2">
+            <Button icon="ti-refresh" onClick={() => load(page)}>Refresh</Button>
+            <Button variant="primary" icon="ti-user-plus" onClick={() => setShowCreate(true)}>
+              <span className="hidden sm:inline">Add user</span>
+            </Button>
+          </div>
+        }
       />
 
       <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
@@ -280,7 +292,16 @@ export const UserManagementPage = () => {
             })}
           </div>
         )}
+
+        <Pagination meta={pagination} loading={loading} onPage={setPage} />
       </div>
+
+      {showCreate && (
+        <UserCreateModal
+          onClose={() => setShowCreate(false)}
+          onCreated={() => { setPage(1); load(1); }}
+        />
+      )}
     </div>
   );
 };
